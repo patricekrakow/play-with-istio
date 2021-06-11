@@ -1,0 +1,114 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: scenario-01a-ns
+  labels:
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: scenario-01a-ns
+  name: service-b-sa
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: scenario-01a-ns
+  name: service-a-sa
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: scenario-01a-ns
+  name: service-b-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-b
+      version: 0.0.1
+  template:
+    metadata:
+      labels:
+        app: service-b
+        version: 0.0.1
+    spec:
+      serviceAccountName: service-b-sa
+      containers:
+      - name: service-b-co
+        image: kennethreitz/httpbin
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: scenario-01a-ns
+  name: service-b
+spec:
+  selector:
+    app: service-b
+    version: 0.0.1
+  ports:
+  - name: service-b-http-port
+    protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  namespace: scenario-01a-ns
+  name: api-company-com-service-entry
+spec:
+  hosts:
+    - api.company.com
+  location: MESH_INTERNAL
+  resolution: STATIC
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  namespace: scenario-01a-ns
+  name: api-company-com-virtual-service
+spec:
+  hosts:
+    - api.company.com
+  http:
+    - name: service-b-http-route
+      match:
+        - method:
+            exact: GET
+          headers:
+            host:
+              exact: api.company.com
+          uri:
+            exact: /uuid
+      route:
+        - destination:
+            host: service-b.scenario-01a-ns.svc.cluster.local
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: scenario-01a-ns
+  name: service-a-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-a
+      version: 0.0.1
+  template:
+    metadata:
+      labels:
+        app: service-a
+        version: 0.0.1
+    spec:
+      serviceAccountName: service-a-sa
+      containers:
+      - name: service-a-co
+        image: curlimages/curl
+        command: ["/bin/sh"]
+        args: ["-c", "while curl http://api.company.com/uuid; do sleep 1.0; done;"]
