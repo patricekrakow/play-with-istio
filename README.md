@@ -94,3 +94,38 @@ The HTTP client service `service-a` will be then implemented by following Bash s
 ```bash
 while curl http://api.company.com/uuid; do sleep 1.0; done;
 ```
+
+```text
+$ istioctl kube-inject -f ../play-with-kubernetes/scenario-01.yaml -o scenario-01.injected.yaml
+```
+
+```text
+$ kubectl apply -f scenario-01.injected.yaml
+namespace/scenario-01-ns unchanged
+serviceaccount/service-b-sa unchanged
+serviceaccount/service-a-sa unchanged
+deployment.apps/service-b-deploy configured
+service/service-b unchanged
+deployment.apps/service-a-deploy configured
+```
+
+```text
+$ kubectl get pods -n scenario-01-ns
+NAME                                READY   STATUS    RESTARTS   AGE
+service-a-deploy-7bd7b85dcd-tqx94   2/2     Running   0          49s
+service-b-deploy-7fcbdb5677-kwc7s   2/2     Running   0          49s
+```
+
+```text
+$ kubectl logs -n scenario-01-ns --tail 10 service-a-deploy-7bd7b85dcd-tqx94
+{
+  "uuid": "1baf4626-f138-4a8d-8633-dd6b7f9e8564"
+}
+100    53  100    53    0     0  14445      0 --:--:-- --:--:-- --:--:-- 17666
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+{
+  "uuid": "65f256d2-86d9-43e4-bec9-91b1e43039d0"
+}
+100    53  100    53    0     0   9125      0 --:--:-- --:--:-- --:--:-- 10600
+```
