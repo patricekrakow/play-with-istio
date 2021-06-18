@@ -8,20 +8,20 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  namespace: scenario-01a-ns
   name: service-b-sa
+  namespace: scenario-01a-ns
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  namespace: scenario-01a-ns
   name: service-a-sa
+  namespace: scenario-01a-ns
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: scenario-01a-ns
   name: service-b-deploy
+  namespace: scenario-01a-ns
 spec:
   replicas: 1
   selector:
@@ -44,8 +44,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: scenario-01a-ns
   name: service-b
+  namespace: scenario-01a-ns
 spec:
   selector:
     app: service-b
@@ -59,41 +59,19 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
-  namespace: scenario-01a-ns
   name: api-company-com-service-entry
+  namespace: scenario-01a-ns
 spec:
   hosts:
     - api.company.com
   location: MESH_INTERNAL
   resolution: STATIC
 ---
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  namespace: scenario-01a-ns
-  name: api-company-com-virtual-service
-spec:
-  hosts:
-    - api.company.com
-  http:
-    - name: service-b-http-route
-      match:
-        - method:
-            exact: GET
-          headers:
-            host:
-              exact: api.company.com
-          uri:
-            exact: /uuid
-      route:
-        - destination:
-            host: service-b.scenario-01a-ns.svc.cluster.local
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: scenario-01a-ns
   name: service-a-deploy
+  namespace: scenario-01a-ns
 spec:
   replicas: 1
   selector:
@@ -112,3 +90,25 @@ spec:
         image: curlimages/curl
         command: ["/bin/sh"]
         args: ["-c", "while curl http://api.company.com/uuid; do sleep 1.0; done;"]
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: api-company-com-virtual-service
+  namespace: scenario-01a-ns
+spec:
+  hosts:
+    - api.company.com
+  http:
+    - name: service-b-http-route
+      match:
+        - method:
+            exact: GET
+          headers:
+            host:
+              exact: api.company.com
+          uri:
+            exact: /uuid
+      route:
+        - destination:
+            host: service-b.scenario-01a-ns.svc.cluster.local
