@@ -1,9 +1,9 @@
-# play-with-istio/scenario-03/service-b.yaml
+# play-with-istio/scenario-04/service-b.yaml
 
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: s03-service-b-ns
+  name: s04-service-b-ns
   labels:
     istio-injection: enabled
 ---
@@ -11,13 +11,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: service-b-sa
-  namespace: s03-service-b-ns
+  namespace: s04-service-b-ns
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-b-deploy
-  namespace: s03-service-b-ns
+  namespace: s04-service-b-ns
 spec:
   replicas: 1
   selector:
@@ -41,7 +41,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-b
-  namespace: s03-service-b-ns
+  namespace: s04-service-b-ns
 spec:
   selector:
     app: service-b
@@ -56,10 +56,10 @@ apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
   name: api-company-com-service-entry
-  namespace: s03-service-b-ns
+  namespace: s04-service-b-ns
 spec:
   hosts:
-    - s03.api.company.com
+    - s04.api.company.com
   location: MESH_INTERNAL
   resolution: STATIC
 ---
@@ -67,10 +67,10 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: api-company-com-virtual-service
-  namespace: s03-service-b-ns
+  namespace: s04-service-b-ns
 spec:
   hosts:
-    - s03.api.company.com
+    - s04.api.company.com
   http:
     - name: service-b-http-route
       match:
@@ -78,9 +78,31 @@ spec:
             exact: GET
           headers:
             host:
-              exact: s03.api.company.com
+              exact: s04.api.company.com
           uri:
             exact: /uuid
       route:
         - destination:
-            host: service-b.s03-service-b-ns.svc.cluster.local
+            host: service-b.s04-service-b-ns.svc.cluster.local
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: service-a-to-get-api-company-com-get-uuid-authorization-policy
+  namespace: s04-service-b-ns
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              # Spiffe Id:
+              - cluster.local/ns/s04-service-a-ns/sa/service-a-sa
+    - to:
+        - operation:
+            methods:
+              - GET
+            hosts:
+              - api.company.com
+            paths:
+              - /uuid
