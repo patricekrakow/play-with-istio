@@ -103,6 +103,6 @@ spec:
             methods:
               - GET
             hosts:
-              - api.company.com
+              - s04.api.company.com
             paths:
               - /uuid
