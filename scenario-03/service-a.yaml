@@ -1,0 +1,38 @@
+# play-with-kubernetes/scenario-03/service-a.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: s03-service-a-ns
+  labels:
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-a-sa
+  namespace: s03-service-a-ns
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-a-deploy
+  namespace: s03-service-a-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-a
+      version: 0.0.1
+  template:
+    metadata:
+      labels:
+        app: service-a
+        version: 0.0.1
+    spec:
+      serviceAccountName: service-a-sa
+      containers:
+      - name: service-a-co
+        image: curlimages/curl
+        command: ["/bin/sh"]
+        args: ["-c", "while curl http://api.company.com/uuid; do sleep 1.0; done;"]
