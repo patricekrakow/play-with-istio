@@ -55,22 +55,22 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
-  name: api-company-com-service-entry
+  name: httpbin-org-service-entry
   namespace: s03-service-b-ns
 spec:
   hosts:
-    - s03.api.company.com
+    - httpbin.org
   location: MESH_INTERNAL
   resolution: STATIC
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: api-company-com-virtual-service
+  name: httpbin-org-virtual-service
   namespace: s03-service-b-ns
 spec:
   hosts:
-    - s03.api.company.com
+    - httpbin.org
   http:
     - name: service-b-http-route
       match:
@@ -78,7 +78,7 @@ spec:
             exact: GET
           headers:
             host:
-              exact: s03.api.company.com
+              exact: httpbin.org
           uri:
             exact: /uuid
       route:

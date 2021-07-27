@@ -1,4 +1,4 @@
-# play-with-kubernetes/scenario-02/service-a.yaml
+# play-with-istio/scenario-02/service-a.yaml
 
 apiVersion: v1
 kind: Namespace

@@ -55,22 +55,22 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
-  name: api-company-com-service-entry
+  name: s04-httpbin-org-service-entry
   namespace: s04-service-b-ns
 spec:
   hosts:
-    - s04.api.company.com
+    - s04.httpbin.org
   location: MESH_INTERNAL
   resolution: STATIC
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: api-company-com-virtual-service
+  name: s04-httpbin-org-virtual-service
   namespace: s04-service-b-ns
 spec:
   hosts:
-    - s04.api.company.com
+    - s04.httpbin.org
   http:
     - name: service-b-http-route
       match:
@@ -78,7 +78,7 @@ spec:
             exact: GET
           headers:
             host:
-              exact: s04.api.company.com
+              exact: s04.httpbin.org
           uri:
             exact: /uuid
       route:
@@ -88,7 +88,7 @@ spec:
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
-  name: service-a-to-get-api-company-com-get-uuid-authorization-policy
+  name: service-a-to-get-s04-httpbin-org-uuid-authorization-policy
   namespace: s04-service-b-ns
 spec:
   action: ALLOW
@@ -103,6 +103,6 @@ spec:
             methods:
               - GET
             hosts:
-              - s04.api.company.com
+              - s04.httpbin.org
             paths:
               - /uuid

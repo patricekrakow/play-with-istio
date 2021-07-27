@@ -11,14 +11,14 @@ Before playing with Istio, you should first play with [Kubernetes](https://githu
 ```text
 $ curl -sL https://istio.io/downloadIstioctl | sh -
 
-Downloading istioctl-1.10.1 from https://github.com/istio/istio/releases/download/1.10.1/istioctl-1.10.1-linux-amd64.tar.gz ...
-istioctl-1.10.1-linux-amd64.tar.gz download complete!
+Downloading istioctl-1.10.3 from https://github.com/istio/istio/releases/download/1.10.3/istioctl-1.10.3-linux-amd64.tar.gz ...
+istioctl-1.10.3-linux-amd64.tar.gz download complete!
 
 Add the istioctl to your path with:
-  export PATH=$PATH:$HOME/.istioctl/bin
+  export PATH=$PATH:$HOME/.istioctl/bin 
 
 Begin the Istio pre-installation check by running:
-         istioctl x precheck
+         istioctl x precheck 
 
 Need more information? Visit https://istio.io/docs/reference/commands/istioctl/
 ```

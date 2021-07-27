@@ -1,4 +1,4 @@
-# play-with-kubernetes/scenario-03/service-a.yaml
+# play-with-istio/scenario-03/service-a.yaml
 
 apiVersion: v1
 kind: Namespace
@@ -35,4 +35,4 @@ spec:
       - name: service-a-co
         image: curlimages/curl
         command: ["/bin/sh"]
-        args: ["-c", "while curl http://s03.api.company.com/uuid; do sleep 1.0; done;"]
+        args: ["-c", "while curl http://httpbin.org/uuid; do sleep 1.0; done;"]
